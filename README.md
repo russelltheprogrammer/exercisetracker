@@ -1,3 +1,105 @@
-# Exercise Tracker
+### Part of [freeCodeCamp.org](https://www.freecodecamp.org/) Back End Development and APIs Certificate
 
-This is the boilerplate for the Exercise Tracker project. Instructions for building your project can be found at https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/exercise-tracker
+Note: This project was built in progress for the <strong>freeCodeCamp Back End Development and APIs Projects Certificate</strong>. This was for <strong>project #4</strong>. This is a clone of the freeCodeCamp boilerplate repo from Github. The clone only included the starting packages and initial code. I had to build the actually API by myself, following the user stories and technical requirements requested by freeCodeCamp.
+
+
+# Challenge?
+## To Build a URL Shortener Microservice
+
+## User Stories To Fullfill
+
+Build a full stack JavaScript app that is functionally similar to this: https://exercise-tracker.freecodecamp.rocks/. Working on this project will involve you writing your code using one of the following methods:
+
+- Clone [this GitHub repo](https://github.com/freeCodeCamp/boilerplate-project-exercisetracker/) and complete your project locally.
+- Use [our Replit starter project](https://replit.com/github/freeCodeCamp/boilerplate-project-exercisetracker) to complete your project.
+- Use a site builder of your choice to complete the project. Be sure to incorporate all the files from our GitHub repo.
+
+When you are done, make sure a working demo of your project is hosted somewhere public. Then submit the URL to it in the ```Solution Link``` field. Optionally, also submit a link to your project's source code in the ```GitHub``` Link field.
+
+Your responses should have the following structures.
+
+Exercise: 
+
+```{
+    username: "fcc_test",
+    descriptions: "test",
+    duration: 60,
+    date: "Mon Jan 01 1990",
+    _id: "5fb5853f734231456ccb3b05"
+}```
+
+User:
+
+```{
+  username: "fcc_test",
+  _id: "5fb5853f734231456ccb3b05"
+}```
+
+Log:
+
+```{
+  username: "fcc_test",
+  count: 1,
+  _id: "5fb5853f734231456ccb3b05",
+  log: [{
+    description: "test",
+    duration: 60,
+    date: "Mon Jan 01 1990",
+  }]
+}```
+
+<strong>Hint</strong>: For the ```date``` property, the ```toDateString``` method of the ```Date``` API can be used to achieve the expected output.
+
+## Technical Requirements
+
+- You should provide your own project, not the example URL.
+
+- You can ```POST``` to ```/api/users``` with form data ```username``` to create a new user.
+
+- The returned response from ```POST /api/users``` with form data ```username``` will be an object with ```username``` and ```_id properties```.
+
+- You can make a ```GET``` request to ```/api/users``` to get a list of all users.
+
+- The ```GET``` request to ```/api/users``` returns an array.
+
+- Each element in the array returned from ```GET /api/users``` is an object literal containing a user's ```username``` and ```_id```.
+
+- You can ```POST``` to ```/api/users/:_id/exercises``` with form data ```description```, ```duration```, and optionally ```date```. If no date is supplied, the current date will be used.
+
+- The response returned from ```POST /api/users/:_id/exercises``` will be the user object with the exercise fields added.
+
+- You can make a ```GET``` request to ```/api/users/:_id/logs``` to retrieve a full exercise log of any user.
+
+- A request to a user's log ```GET /api/users/:_id/logs``` returns a user object with a ```count``` property representing the number of exercises that belong to that user.
+
+- A ```GET``` request to ```/api/users/:_id/logs``` will return the user object with a ```log``` array of all the exercises added.
+
+- Each item in the ```log``` array that is returned from ```GET /api/users/:_id/logs``` is an object that should have a ```description```, ```duration```, and ```date``` properties.
+
+- The ```description``` property of any object in the ```log``` array that is returned from ```GET /api/users/:_id/logs``` should be a string.
+
+- The ```duration``` property of any object in the ```log``` array that is returned from ```GET /api/users/:_id/logs``` should be a number.
+
+- The date property of any object in the ```log``` array that is returned from ```GET /api/users/:_id/logs``` should be a string. Use the ```dateString``` format of the ```Date``` API.
+
+- You can add ```from```, ```to``` and ```limit``` parameters to a ```GET /api/users/:_id/logs``` request to retrieve part of the log of any user. ```from``` and ```to``` are dates in ```yyyy-mm-dd``` format. ```limit``` is an integer of how many logs to send back.
+
+## What I used to create?
+
+I cloned the freeCodeCamp repo from Github.
+
+## Key Concepts Used
+
+- HTTPS Requests
+- Building an API
+- Express.js
+- Node.js
+- Javascript
+
+## Source Code?
+
+Check out my source code above.
+
+## Feedback?
+
+Let me know! I would love to know what you think.
