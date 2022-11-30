@@ -28,16 +28,22 @@ app.get('/', (req, res) => {
 
 app.post('/api/users', async (req, res, next) => {
   const newUserName = new Username({ username: req.body.username });
-  
   await newUserName.save((err) => {
     if(err) return console.error(err);
   });
-
   res.json( newUserName );
 });
 
-app.get('/api/users', (req, res, next) => {
- res.json([req]);
+app.get('/api/users', async (req, res, next) => {
+
+ await Username.find({}).then((err, data) => {
+  if(err) {
+    return console.error(err)
+  }
+  else {
+  res.send(data);
+  }
+ });
 });
 
 
