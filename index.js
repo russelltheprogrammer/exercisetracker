@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose');
+const { ObjectID, ObjectId } = require('bson');
 require('dotenv').config()
 
 const URI = process.env.URI;
@@ -14,8 +15,8 @@ mongoose.connect(URI).then(
 const Schema = mongoose.Schema;
 
 const usernameSchema = new Schema({ 
-  username: { type: String, required: true }
-})
+  username: { type: String, required: true },
+}, { versionKey: false });
 
 const Username = mongoose.model('Username', usernameSchema);
 
@@ -27,23 +28,31 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/users', async (req, res, next) => {
-  const newUserName = new Username({ username: req.body.username });
-  await newUserName.save((err) => {
-    if(err) return console.error(err);
+  const newUserName = await new Username({ 
+    username: req.body.username
   });
-  res.json( newUserName );
+  newUserName.save((err, data) => {
+    if(err) return console.error(err);
+    res.json( data );
+  });
 });
 
-app.get('/api/users', async (req, res, next) => {
+app.get('/api/users', (req, res, next) => {
 
- await Username.find({}).then((err, data) => {
+ Username.find({},(err, users) => {
   if(err) {
-    return console.error(err)
+    return console.error(err);
   }
-  else {
-  res.send(data);
-  }
+  res.json(users);
  });
+
+  // data.map((item) => {
+  //   if(item === "_id"){
+  //     return item.str
+  //   }
+  // });
+
+  // res.send(data);
 });
 
 
