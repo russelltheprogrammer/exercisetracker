@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+//post users to /api/users
 app.post('/api/users', async (req, res, next) => {
   const newUserName = await new Username({ 
     username: req.body.username
@@ -37,27 +38,15 @@ app.post('/api/users', async (req, res, next) => {
   });
 });
 
+//get users from /api/users
 app.get('/api/users', (req, res, next) => {
-
  Username.find({},(err, users) => {
-  if(err) {
-    return console.error(err);
-  }
-  res.json(users);
+    if(err) {
+      return console.error(err);
+    }
+    res.json(users);
  });
-
-  // data.map((item) => {
-  //   if(item === "_id"){
-  //     return item.str
-  //   }
-  // });
-
-  // res.send(data);
 });
-
-
-
-
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
