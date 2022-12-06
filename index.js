@@ -23,7 +23,7 @@ const exerciseSchema = new Schema({
   duration: {type: Number, required: true},
   date: {type: String},
   userId: {type: String}
-},{ versionKey: false });
+}, { versionKey: false });
 
 const Username = mongoose.model('Username', usernameSchema);
 const Exercise = mongoose.model('Exercise', exerciseSchema);
@@ -56,19 +56,20 @@ app.get('/api/users', (req, res, next) => {
  });
 });
 
+const convertDate = (date) => !date ? new Date().toDateString() : new Date(date).toDateString() === "Invalid Date" ? new Date().toDateString() : new Date(date).toDateString();
+
 //post exercise form data to /api/users/:id/exercises
 app.post('/api/users/:_id/exercises', async (req, res, next) => {
   const userId = req.body[":_id"];
-  const { description, duration } = req.body;
-  let date = req.body.date;
+  const description = req.body.description;
+  const duration = parseInt(req.body.duration);
+  date = convertDate(req.body.date);
   const user = await Username.findById(userId);
 
   if (!user) {
     res.json({ message: "This user does not exist. Please add a new user to get an id."})
   }
-  if(!date){
-    date = new Date().toDateString();
-  }
+
   const newExercise = await new Exercise({
     username: user.username,
     description: description,
@@ -80,7 +81,14 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
     if(err) {
       return console.error(err);
     }
-    res.json(exercise);
+    return exercise;
+  });
+  res.json({
+    username: user.username,
+    description: description,
+    duration: duration,
+    date: date,
+    _id: userId
   });
 });
 
