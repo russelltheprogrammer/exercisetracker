@@ -18,11 +18,11 @@ const usernameSchema = new Schema({
 }, { versionKey: false });
 
 const exerciseSchema = new Schema({
-  username: { type: String},
-  description: {type: String, required: true},
-  duration: {type: Number, required: true},
-  date: {type: String},
-  userId: {type: String}
+  username: { type: String },
+  description: { type: String, required: true },
+  duration: { type: Number, required: true },
+  date: { type: String },
+  userId: { type: String }
 }, { versionKey: false });
 
 const Username = mongoose.model('Username', usernameSchema);
@@ -64,14 +64,12 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
   const description = req.body.description;
   const duration = parseInt(req.body.duration);
   date = convertDate(req.body.date);
-  const user = await Username.findById(userId);
-
-  if (!user) {
+  const userFound = await Username.findById(userId);
+  if (!userFound) {
     res.json({ message: "This user does not exist. Please add a new user to get an id."})
   }
-
   const newExercise = await new Exercise({
-    username: user.username,
+    username: userFound.username,
     description: description,
     duration: duration,
     date: date,
@@ -84,13 +82,37 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
     return exercise;
   });
   res.json({
-    username: user.username,
+    username: userFound.username,
     description: description,
     duration: duration,
     date: date,
     _id: userId
   });
 });
+
+//get full excercise log of any user by id
+app.get('/api/users/:_id/logs', async (req, res, next) => {
+ const userId = req.params._id;
+
+ const exercisesFound = await Exercise.find({ userId: userId })
+  .select({ username: 0, userId: 0, _id: 0})
+  .exec((err, dataFound) => {
+    if(err) {
+      return console.error(err);
+    }
+    return dataFound;
+  });
+
+ const numberOfExercises = exercisesFound.length;
+ res.json({
+  username: "",
+  count: numberOfExercises,
+  _id: userId,
+  log: exercisesFound
+ });
+}); 
+
+// test link /api/users/63891c44ca8e2c85b6c5c4f6/logs
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
