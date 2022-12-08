@@ -36,8 +36,8 @@ app.get('/', (req, res) => {
 });
 
 //post users to /api/users
-app.post('/api/users', async (req, res, next) => {
-  const newUserName = await new Username({ 
+app.post('/api/users', (req, res) => {
+  const newUserName = new Username({ 
     username: req.body.username
   });
   newUserName.save((err, data) => {
@@ -47,7 +47,7 @@ app.post('/api/users', async (req, res, next) => {
 });
 
 //get users from /api/users
-app.get('/api/users', (req, res, next) => {
+app.get('/api/users', (req, res) => {
  Username.find({},(err, users) => {
     if(err) {
       return console.error(err);
@@ -58,19 +58,30 @@ app.get('/api/users', (req, res, next) => {
 
 const convertDate = (date) => !date ? new Date().toDateString() : new Date(date).toDateString() === "Invalid Date" ? new Date().toDateString() : new Date(date).toDateString();
 
+const findUserById = (userId, done) => {
+  Username.findById(userId, (err, foundUser) => {
+    if(err) {
+      return console.log(err);
+    }
+    done(null, foundUser);
+  });
+};
+
 //post exercise form data to /api/users/:id/exercises
-app.post('/api/users/:_id/exercises', async (req, res, next) => {
+app.post('/api/users/:_id/exercises', (req, res) => {
   const userId = req.body[":_id"];
   const description = req.body.description;
   const duration = parseInt(req.body.duration);
   date = convertDate(req.body.date);
-  const userFound = await Username.findById(userId);
-
+  const userFound = findUserById((err, user) => {
+    if(err){ return console.log(err)}
+    console.log(user);
+  });
+  console.log(userFound);
   if (!userFound) {
     res.json({ message: "This user does not exist. Please add a new user to get an id."});
   }
-  const newExercise = await new Exercise({
-    username: userFound.username,
+  const newExercise = new Exercise({
     description: description,
     duration: duration,
     date: date,
@@ -92,16 +103,21 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
 });
 
 //get full excercise log of any user by id
-app.get('/api/users/:_id/logs', async (req, res, next) => {
+app.get('/api/users/:_id/logs',  (req, res) => {
  const userId = req.params._id;
- const userFound = await Username.findById(userId);
+ const userFound = Username.findById(userId, (err, data) => { 
+  if(err) {
+    return console.error(err);
+  }
+  return data;
+  });
  if (!userFound) {
    res.json({ message: "This user does not exist. Please add a new user to get an id."});
  }
 
- const exercisesFound = await Exercise
+ const exercisesFound = Exercise
   .find({ userId: userId })
-  .select({ username: 0, userId: 0, _id: 0});
+  .select({ userId: 0, _id: 0});
 
 if(!exercisesFound) {
   res.json({ message: "No exercises found for this user. Please add exercises."});
