@@ -58,49 +58,44 @@ app.get('/api/users', (req, res) => {
 
 const convertDate = (date) => !date ? new Date().toDateString() : new Date(date).toDateString() === "Invalid Date" ? new Date().toDateString() : new Date(date).toDateString();
 
-const findUserById = (userId, done) => {
-  Username.findById(userId, (err, foundUser) => {
-    if(err) {
-      return console.log(err);
-    }
-    done(null, foundUser);
-  });
-};
-
 //post exercise form data to /api/users/:id/exercises
 app.post('/api/users/:_id/exercises', (req, res) => {
-  const userId = req.body[":_id"];
+  const userId = req.params._id;
   const description = req.body.description;
   const duration = parseInt(req.body.duration);
-  date = convertDate(req.body.date);
-  const userFound = findUserById((err, user) => {
-    if(err){ return console.log(err)}
-    console.log(user);
+  const date = convertDate(req.body.date);
+    Username.findById(userId, (err, userFound) => {
+      if(err) {
+        return console.log(err);
+      }
+      else if (!userFound) {
+        res.json({ message: "This user does not exist. Please add a new user to get an id."});
+      }
+      else {
+        const newExercise = new Exercise({
+          description: description,
+          duration: duration,
+          date: date,
+          userId: userId
+        });
+        newExercise.save((err2, exercise) => {
+          if(err2) {
+            return console.log(err2);
+          }
+          else {
+            res.json({
+              username: userFound.username,
+              description: description,
+              duration: duration,
+              date: date,
+              _id: userId
+            });
+            return exercise;
+          }
+        });
+      }
+    });
   });
-  console.log(userFound);
-  if (!userFound) {
-    res.json({ message: "This user does not exist. Please add a new user to get an id."});
-  }
-  const newExercise = new Exercise({
-    description: description,
-    duration: duration,
-    date: date,
-    userId: userId
-  });
-  newExercise.save((err, exercise) => {
-    if(err) {
-      return console.error(err);
-    }
-    return exercise;
-  });
-  res.json({
-    username: userFound.username,
-    description: description,
-    duration: duration,
-    date: date,
-    _id: userId
-  });
-});
 
 //get full excercise log of any user by id
 app.get('/api/users/:_id/logs',  (req, res) => {
