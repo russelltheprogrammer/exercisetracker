@@ -65,8 +65,9 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
   const duration = parseInt(req.body.duration);
   date = convertDate(req.body.date);
   const userFound = await Username.findById(userId);
+
   if (!userFound) {
-    res.json({ message: "This user does not exist. Please add a new user to get an id."})
+    res.json({ message: "This user does not exist. Please add a new user to get an id."});
   }
   const newExercise = await new Exercise({
     username: userFound.username,
@@ -93,26 +94,30 @@ app.post('/api/users/:_id/exercises', async (req, res, next) => {
 //get full excercise log of any user by id
 app.get('/api/users/:_id/logs', async (req, res, next) => {
  const userId = req.params._id;
+ const userFound = await Username.findById(userId);
+ if (!userFound) {
+   res.json({ message: "This user does not exist. Please add a new user to get an id."});
+ }
 
- const exercisesFound = await Exercise.find({ userId: userId })
-  .select({ username: 0, userId: 0, _id: 0})
-  .exec((err, dataFound) => {
-    if(err) {
-      return console.error(err);
-    }
-    return dataFound;
-  });
+ const exercisesFound = await Exercise
+  .find({ userId: userId })
+  .select({ username: 0, userId: 0, _id: 0});
+
+if(!exercisesFound) {
+  res.json({ message: "No exercises found for this user. Please add exercises."});
+}
 
  const numberOfExercises = exercisesFound.length;
+
  res.json({
-  username: "",
+  username: userFound.username,
   count: numberOfExercises,
   _id: userId,
   log: exercisesFound
  });
 }); 
 
-// test link /api/users/63891c44ca8e2c85b6c5c4f6/logs
+// test link /api/users/63921b295f5e99b88b4e4783/logs
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
