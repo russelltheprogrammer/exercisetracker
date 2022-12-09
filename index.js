@@ -69,7 +69,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         return console.log(err);
       }
       else if (!userFound) {
-        res.json({ message: "This user does not exist. Please add a new user to get an id."});
+        return res.json({ message: "This user does not exist. Please add a new user to get an id."});
       }
       else {
         const newExercise = new Exercise({
@@ -100,35 +100,52 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 //get full excercise log of any user by id
 app.get('/api/users/:_id/logs',  (req, res) => {
  const userId = req.params._id;
- const userFound = Username.findById(userId, (err, data) => { 
-  if(err) {
-    return console.error(err);
-  }
-  return data;
+ let numberOfExercises = 0;
+ let { from: fromDate, to: toDate } = req.query;
+ const limit = req.query.limit ? parseInt(req.query.limit) : 0;
+ console.log(limit);
+  Username.findById(userId, (err, userFound) => {
+    if(err) {
+      return console.log(err);
+    }
+    else if (!userFound) {
+      return res.json({ message: "This user does not exist. Please add a new user to get an id."});
+    }
+    else {
+      Exercise
+        .find({ userId: userId })
+        .select({ userId: 0, _id: 0})
+        .limit({ limit })
+        .exec((err2, exercisesFound) => {
+          if(err2) {
+            return console.log(err2);
+          }
+          else if(!exercisesFound) {
+            return res.json({ message: "No exercises found for this user. Please add exercises."});
+          }
+          else {
+            numberOfExercises = exercisesFound.length;
+            // if(!fromDate && !toDate) {
+            //   exercisesFound.filter((valueWithinDateRange) => {
+            //     if(exercisesFound.date >= fromDate && exercisesFound.date <= toDate) {
+            //       return valueWithinDateRange;
+            //     }
+            //   });
+            // }
+              return res.json({
+                username: userFound.username,
+                count: numberOfExercises,
+                _id: userId,
+                log: exercisesFound
+            });
+          }
+        });
+    }
   });
- if (!userFound) {
-   res.json({ message: "This user does not exist. Please add a new user to get an id."});
- }
-
- const exercisesFound = Exercise
-  .find({ userId: userId })
-  .select({ userId: 0, _id: 0});
-
-if(!exercisesFound) {
-  res.json({ message: "No exercises found for this user. Please add exercises."});
-}
-
- const numberOfExercises = exercisesFound.length;
-
- res.json({
-  username: userFound.username,
-  count: numberOfExercises,
-  _id: userId,
-  log: exercisesFound
- });
 }); 
 
 // test link /api/users/63921b295f5e99b88b4e4783/logs
+// test link 2 /api/users/63921b295f5e99b88b4e4783/logs?[limit=5]
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
