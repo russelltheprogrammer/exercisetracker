@@ -101,9 +101,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 app.get('/api/users/:_id/logs',  (req, res) => {
  const userId = req.params._id;
  let numberOfExercises = 0;
- let { from: fromDate, to: toDate } = req.query;
+//  const { from: fromDate, to: toDate } = req.query;
+ const fromDate = new Date(req.query.from).valueOf();
+ const toDate = new Date(req.query.to).valueOf();
  const limit = req.query.limit ? parseInt(req.query.limit) : 0;
- console.log(limit);
+ console.log(fromDate, toDate);
   Username.findById(userId, (err, userFound) => {
     if(err) {
       return console.log(err);
@@ -114,8 +116,8 @@ app.get('/api/users/:_id/logs',  (req, res) => {
     else {
       Exercise
         .find({ userId: userId })
+        .limit(limit)
         .select({ userId: 0, _id: 0})
-        .limit({ limit })
         .exec((err2, exercisesFound) => {
           if(err2) {
             return console.log(err2);
@@ -125,13 +127,16 @@ app.get('/api/users/:_id/logs',  (req, res) => {
           }
           else {
             numberOfExercises = exercisesFound.length;
-            // if(!fromDate && !toDate) {
-            //   exercisesFound.filter((valueWithinDateRange) => {
-            //     if(exercisesFound.date >= fromDate && exercisesFound.date <= toDate) {
-            //       return valueWithinDateRange;
-            //     }
-            //   });
-            // }
+            console.log("1985-07-15" >= fromDate);
+            console.log("2010-06-15" <= toDate);
+            if(fromDate && toDate) {
+              exercisesFound.filter((valueWithinDateRange) => {
+                let dateToCompare = new Date(valueWithinDateRange.date).valueOf();
+                if(dateToCompare >= fromDate && dateToCompare <= toDate) {
+                  return valueWithinDateRange;
+                }
+              });
+            }
               return res.json({
                 username: userFound.username,
                 count: numberOfExercises,
@@ -145,7 +150,7 @@ app.get('/api/users/:_id/logs',  (req, res) => {
 }); 
 
 // test link /api/users/63921b295f5e99b88b4e4783/logs
-// test link 2 /api/users/63921b295f5e99b88b4e4783/logs?[limit=5]
+// test link 2 /api/users/63921b295f5e99b88b4e4783/logs?from=1985-01-01&to=2010-06-15&limit=5
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
