@@ -99,7 +99,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
   });
 
 //get full excercise log of any user by id
-app.get('/api/users/:_id/logs',  (req, res) => {
+app.get('/api/users/:_id/logs', (req, res) => {
  const userId = req.params._id;
  let numberOfExercises = 0;
  const fromDate = convertDateToValueFormat(req.query.from);
