@@ -101,6 +101,14 @@ I cloned the freeCodeCamp repo from Github.
 - Express.js
 - Node.js
 - Javascript
+- MongoDB
+- Mongoose
+- Date API
+- Queries
+- Parameters
+- Routes
+- JSON
+
 
 ## Source Code?
 
