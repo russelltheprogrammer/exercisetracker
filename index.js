@@ -56,23 +56,6 @@ app.get('/api/users', (req, res) => {
  });
 });
 
-// have to use ISOString conversion because FCC test is concerned about different timezones
-// const convertDateToStringFormat = (date) => {
-//   let newDateFormat = new Date(date).toDateString();
-//   let currentDateISOFormat = new Date().toISOString().split('Z')[0]
-//   let currentDateToBeSaved = new Date(currentDateISOFormat).toLocaleDateString();
-//   console.log(currentDateISOFormat);
-//   console.log(currentDateToBeSaved);
-//   if(!date) {
-//     return currentDateToBeSaved;
-//   }
-//   else if (newDateFormat === "Invalid Date") {
-//     return currentDateToBeSaved;
-//   }
-//   let convertedDate = new Date(date).toISOString().substring(0,10);
-//   return new Date(convertedDate).toDateString();
-// }
-
 const convertDateToStringFormat = (date) => !date ? new Date().toDateString() : new Date(date).toDateString() === "Invalid Date" ? new Date().toDateString() : new Date(date).toDateString();
 const convertDateToValueFormat = (date) => new Date(date).valueOf();
 
@@ -127,7 +110,7 @@ app.get('/api/users/:_id/logs',  (req, res) => {
   username: "",
   count: numberOfExercises,
   log: ""
- }
+ };
   Username.findById(userId, (err, userFound) => {
     if(err) {
       return console.log(err);
@@ -180,10 +163,6 @@ app.get('/api/users/:_id/logs',  (req, res) => {
     }
   });
 }); 
-
-// test link /api/users/63921b295f5e99b88b4e4783/logs
-// test link 2 /api/users/63921b295f5e99b88b4e4783/logs?from=1985-01-01&to=2010-06-15&limit=5
-// test link 2 /api/users/63921b295f5e99b88b4e4783/logs?from=1985-01-01&to=2022-12-11&limit=5
 
 const listener = app.listen(process.env.PORT || 3001, () => {
   console.log('Your app is listening on port ' + listener.address().port)
