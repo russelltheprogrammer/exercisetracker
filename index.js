@@ -56,6 +56,23 @@ app.get('/api/users', (req, res) => {
  });
 });
 
+// have to use ISOString conversion because FCC test is concerned about different timezones
+// const convertDateToStringFormat = (date) => {
+//   let newDateFormat = new Date(date).toDateString();
+//   let currentDateISOFormat = new Date().toISOString().split('Z')[0]
+//   let currentDateToBeSaved = new Date(currentDateISOFormat).toLocaleDateString();
+//   console.log(currentDateISOFormat);
+//   console.log(currentDateToBeSaved);
+//   if(!date) {
+//     return currentDateToBeSaved;
+//   }
+//   else if (newDateFormat === "Invalid Date") {
+//     return currentDateToBeSaved;
+//   }
+//   let convertedDate = new Date(date).toISOString().substring(0,10);
+//   return new Date(convertedDate).toDateString();
+// }
+
 const convertDateToStringFormat = (date) => !date ? new Date().toDateString() : new Date(date).toDateString() === "Invalid Date" ? new Date().toDateString() : new Date(date).toDateString();
 const convertDateToValueFormat = (date) => new Date(date).valueOf();
 
@@ -106,9 +123,9 @@ app.get('/api/users/:_id/logs',  (req, res) => {
  const toDate = convertDateToValueFormat(req.query.to);
  const limit = req.query.limit ? parseInt(req.query.limit) : 0;
  let returnObj = {
+  _id: userId,
   username: "",
   count: numberOfExercises,
-  _id: userId,
   log: ""
  }
   Username.findById(userId, (err, userFound) => {
